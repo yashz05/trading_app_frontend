@@ -61,20 +61,21 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
                 SizedBox(
                   height: 20,
                 ),
+
                 TextField(
                   style: TextStyle(
-                    fontSize: 35,
+                    fontSize: 20,
                     color: Colors.white
                   ),
                   decoration: InputDecoration(
                       filled: true,
 
-                      prefix: Icon(
+                      icon: Icon(
                         Icons.search,
-                        size: 20,
+                        size: 30,
                         color: Colors.white,
                       ),
-                      fillColor: Colors.grey.shade800,
+                      fillColor: Colors.white12,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,

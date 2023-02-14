@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:trading_app_hackathon/pages/home.dart';
 
 void main() {
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: app_theme.primary_color,
         ),
         home: home());
   }
