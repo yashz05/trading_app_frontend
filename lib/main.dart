@@ -3,7 +3,7 @@ import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:trading_app_hackathon/pages/home.dart';
 import 'package:get/get.dart';
 void main() {
-  runApp(const GetMaterialApp(home: MyApp()));
+  runApp(const GetMaterialApp(home: MyApp(),debugShowCheckedModeBanner: false,));
 }
 
 class MyApp extends StatelessWidget {

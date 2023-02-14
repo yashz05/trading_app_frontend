@@ -21,4 +21,15 @@ class app_theme {
       TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold);
   static TextStyle ts_qyt =
       TextStyle(fontSize: 15, color: Colors.grey, fontWeight: FontWeight.bold);
+
+  static TextStyle stock__info_tags = TextStyle(
+    fontSize: 22,
+    color: Colors.white60,
+    fontWeight: FontWeight.bold,
+    decoration: TextDecoration.underline,
+    decorationColor: primary_color.shade600,
+    decorationThickness: 1,
+
+    decorationStyle: TextDecorationStyle.dashed,
+  );
 }

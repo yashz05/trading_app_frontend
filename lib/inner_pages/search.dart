@@ -3,6 +3,7 @@ import 'package:trading_app_hackathon/class/news_functions.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
 import 'package:trading_app_hackathon/extra/webview_page.dart';
+import 'package:trading_app_hackathon/widgets/news_tile.dart';
 
 class search extends StatefulWidget {
   const search({Key? key}) : super(key: key);
@@ -100,31 +101,15 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
                                   itemCount: nf.top_news.length,
-                                  itemBuilder: (BuildContext ctx, i) {
+                                  itemBuilder: (BuildContext ctx, int i) {
                                     return Container(
                                       margin: EdgeInsets.all(10),
                                       padding: EdgeInsets.all(10),
                                       color: Colors.black,
-                                      child: ListTile(
-                                        onTap: () {
-                                          Get.to(webview_page(
-                                              url: nf.top_news[i].link!,title:nf.top_news[i].title! ,));
-                                        },
-                                        title: Text(
-                                          nf.top_news[i].title
-                                              .toString()
-                                              .replaceAll(";", "."),
-                                          style: app_theme.ts_name,
-                                        ),
-                                        subtitle: Text(
-                                          "\n" +
-                                              nf.top_news[i].pubDate.toString(),
-                                          style: app_theme.ts_qyt,
-                                        ),
-                                        trailing: Icon(
-                                          Icons.chevron_right_rounded,
-                                          color: app_theme.primary_color,
-                                        ),
+                                      child: news_tile(
+                                        title: nf.top_news[i].title!,
+                                        link: nf.top_news[i].link!,
+                                        date: nf.top_news[i].pubDate!,
                                       ),
                                     );
                                   }),

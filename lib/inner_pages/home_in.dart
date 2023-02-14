@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import "package:mrx_charts/mrx_charts.dart";
 import 'package:chart_sparkline/chart_sparkline.dart';
+import 'package:get/get.dart';
+import 'package:trading_app_hackathon/model/stock_info_model.dart';
+import 'package:trading_app_hackathon/stock_pages/stock_info.dart';
 
 class home_innerlist extends StatefulWidget {
   const home_innerlist({Key? key}) : super(key: key);
@@ -113,6 +116,21 @@ class _home_innerlistState extends State<home_innerlist>
                       return Container(
                         color: Colors.black,
                         child: ListTile(
+                          onTap: () {
+                            Get.to(() => stock_info(
+                                  data: stock_info_model(
+                                    name: "ADANI ENTERPRISE",
+                                    exchange: "NSE",
+                                    tradingsymbol: "ADANI_ENT",
+                                    stock_id: 1234,
+                                    symboltoken: "ADANI",
+                                    open: "100",
+                                    high: "150",
+                                    low: "80",
+                                    close: "102",
+                                  ),
+                                ));
+                          },
                           title: Text(
                             "Adani ENT",
                             style: app_theme.ts_price,

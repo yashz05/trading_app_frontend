@@ -6,7 +6,8 @@ class webview_page extends StatefulWidget {
   final String url;
   final String title;
 
-  const webview_page({Key? key, required this.url , required this.title}) : super(key: key);
+  const webview_page({Key? key, required this.url, required this.title})
+      : super(key: key);
 
   @override
   State<webview_page> createState() => _webview_pageState();
@@ -39,7 +40,10 @@ class _webview_pageState extends State<webview_page>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title,style: app_theme.ts_price,),
+        title: Text(
+          widget.title,
+          style: app_theme.ts_price,
+        ),
         backgroundColor: Colors.black,
       ),
       body: WebViewWidget(
