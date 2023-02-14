@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:trading_app_hackathon/inner_pages/home_in.dart';
+import 'package:trading_app_hackathon/inner_pages/portfolio.dart';
+import 'package:trading_app_hackathon/inner_pages/search.dart';
+import 'package:trading_app_hackathon/inner_pages/settings.dart';
 
 class home extends StatefulWidget {
   const home({Key? key}) : super(key: key);
@@ -27,12 +31,12 @@ class _homeState extends State<home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.black,
         unselectedItemColor: Colors.white,
-        selectedItemColor: Color.fromARGB(255, 3, 255, 121),
+        selectedItemColor: app_theme.primary_color,
         currentIndex: current_page,
         onTap: (n) {
           setState(() {
@@ -50,7 +54,7 @@ class _homeState extends State<home> with SingleTickerProviderStateMixin {
       ),
       body: IndexedStack(
         index: current_page,
-        children: [home_innerlist()],
+        children: [home_innerlist(), search(), portfolio_innerlist(), settings()],
       ),
     );
   }
