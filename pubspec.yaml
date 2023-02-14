@@ -24,6 +24,9 @@ dev_dependencies:
   mrx_charts: ^0.1.3 #MIT
   intl: any #BSD - 3
   chart_sparkline: any #MIT
+  http: any  #BSD-3-Clause
+  xml2json:  any #MIT
+  webview_flutter: any #BSD-3-Clause
 
 
 flutter:

@@ -138,6 +138,8 @@ class _home_innerlistState extends State<home_innerlist>
                                       0.0,
                                       0.0
                                     ],
+                                    useCubicSmoothing: true,
+                                    cubicSmoothingFactor: 0.2,
                                     lineWidth: 5.0,
                                     lineColor: app_theme.primary_color.shade500,
                                   ),
