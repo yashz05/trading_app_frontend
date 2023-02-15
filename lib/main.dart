@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/auth/index.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:trading_app_hackathon/pages/home.dart';
 import 'package:get/get.dart';
@@ -14,10 +15,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Unigo Trading App',
         theme: ThemeData(
           primarySwatch: app_theme.primary_color,
         ),
-        home: home());
+        home: index());
   }
 }
