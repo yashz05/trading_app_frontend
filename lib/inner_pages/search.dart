@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/news_functions.dart';
+import 'package:trading_app_hackathon/configs/backend_api.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
-import 'package:trading_app_hackathon/extra/webview_page.dart';
+import 'package:trading_app_hackathon/model/search_model.dart';
 import 'package:trading_app_hackathon/widgets/news_tile.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 class search extends StatefulWidget {
   const search({Key? key}) : super(key: key);
@@ -16,18 +21,35 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   news_functions nf = Get.put(news_functions());
   TextEditingController search = TextEditingController();
+  var channel =
+      WebSocketChannel.connect(Uri.parse(backend_api.search_api_websocket));
+  List<search_model> sl = [];
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
     nf.get_top_news("Indian Stock Marker");
+    channel.stream.listen(
+      (data) {
+        var stock_list = jsonDecode(data);
+        List<search_model> new_sl = (json.decode(data) as List)
+            .map((data) => search_model.fromJson(data))
+            .toList();
+        setState(() {
+          sl = new_sl;
+        });
+        print(sl.length);
+      },
+      onError: (error) => print(error),
+    );
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+    channel.sink.close();
   }
 
   @override
@@ -69,7 +91,11 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
                   height: 20,
                 ),
                 TextField(
+                  controller: search,
                   style: TextStyle(fontSize: 20, color: Colors.white),
+                  onSubmitted: (n) {
+                    search_stock();
+                  },
                   decoration: InputDecoration(
                       filled: true,
                       icon: Icon(
@@ -116,10 +142,62 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
                             ],
                           )
                         : SizedBox())
-                    : SizedBox(),
+                    : sl != null
+                        ? ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: sl.length,
+                            itemBuilder: (BuildContext ctx, int i) {
+                              return Container(
+                                color: Colors.black,
+                                child: ListTile(
+                                  title: Text(
+                                    sl[i].name!,
+                                    style: app_theme.ts_name,
+                                  ),
+                                  subtitle: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(sl[i].symbol!,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.grey.shade700,
+                                              fontWeight: FontWeight.normal)),
+                                      Text(
+                                        sl[i].exchSeg! + " " + sl[i].expiry!,
+                                        style: app_theme.ts_qyt,
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Icon(
+                                    Icons.add,
+                                    color: app_theme.primary_color,
+                                  ),
+                                ),
+                              );
+                            })
+                        : Center(
+                            child: CircularProgressIndicator(
+                              color: app_theme.primary_color,
+                            ),
+                          )
               ],
             ),
           )
         ]));
+  }
+
+  search_stock() {
+    print("added");
+    if (search.text.isNotEmpty) {
+      channel.sink.add(search.text);
+    }
+    setState(() {});
+  }
+
+  add_to_watch_list() {
+
   }
 }

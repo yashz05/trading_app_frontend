@@ -28,6 +28,7 @@ dev_dependencies:
   xml2json:  any #MIT
   webview_flutter: any #BSD-3-Clause
   shared_preferences: any #BSD-3-Clause
+  web_socket_channel: any #BSD-3-Clause
 
 
 flutter:

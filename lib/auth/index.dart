@@ -4,6 +4,7 @@ import 'package:trading_app_hackathon/class/auth_services.dart';
 import 'package:trading_app_hackathon/class/otp_service.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
+import 'package:trading_app_hackathon/pages/home.dart';
 
 class index extends StatefulWidget {
   const index({Key? key}) : super(key: key);
@@ -16,13 +17,19 @@ class _indexState extends State<index> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   TextEditingController pno = TextEditingController();
   otp_service otps = Get.put(otp_service());
-
+  auth_services aus = Get.put(auth_services());
   bool loading = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
+    aus.getuser_data().then((value) {
+      print(value.lastName);
+      if(value.firstName != null && value.lastName != null ){
+        Get.offAll(home());
+      }
+    });
   }
 
   @override

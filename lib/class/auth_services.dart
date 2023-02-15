@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:trading_app_hackathon/configs/backend_api.dart';
 import 'package:trading_app_hackathon/model/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class auth_services extends GetxController {
   Future<int> check_pno(String pno) async {
@@ -40,15 +41,24 @@ class auth_services extends GetxController {
     print(response.body);
     if (response.statusCode == 200) {
       var decoded = json.decode(response.body);
-      if(decoded["error"] == true){
+      if (decoded["error"] == true) {
         Get.snackbar("Something Went Wrong", decoded["message"],
             colorText: Colors.white, barBlur: 30);
-      }else{
+      } else {
         user_model data = user_model.fromJson(jsonDecode(response.body));
         return data;
       }
-
     }
     return user_model();
+  }
+
+  Future<user_model> getuser_data() async {
+    SharedPreferences sd = await SharedPreferences.getInstance();
+    var data = user_model(
+      firstName: sd.getString("fname"),
+      lastName: sd.getString("lname"),
+    );
+
+    return data;
   }
 }

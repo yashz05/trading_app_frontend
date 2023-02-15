@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/class/auth_services.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
+import 'package:get/get.dart';
+import 'package:trading_app_hackathon/model/user_model.dart';
 
 class portfolio_innerlist extends StatefulWidget {
   const portfolio_innerlist({Key? key}) : super(key: key);
@@ -11,11 +14,18 @@ class portfolio_innerlist extends StatefulWidget {
 class _portfolio_innerlistState extends State<portfolio_innerlist>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  auth_services aus = Get.put(auth_services());
+  user_model um = user_model();
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
+    aus.getuser_data().then((value) {
+      setState(() {
+        um = value;
+      });
+    });
   }
 
   @override
@@ -68,7 +78,7 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Hello, Yash",
+                    "Hello, ${um.firstName}",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 40,
