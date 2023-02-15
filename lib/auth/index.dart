@@ -84,7 +84,6 @@ class _indexState extends State<index> with SingleTickerProviderStateMixin {
                     loading = false;
                   });
                 } else {
-
                   setState(() {
                     loading = !loading;
                   });

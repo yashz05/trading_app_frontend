@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/auth_services.dart';
 import 'package:trading_app_hackathon/class/otp_service.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
+import 'package:trading_app_hackathon/pages/home.dart';
 import 'package:trading_app_hackathon/widgets/otp_widget.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class signup_page extends StatefulWidget {
   final String pno;
@@ -186,10 +188,18 @@ class _signup_pageState extends State<signup_page>
                         child: MaterialButton(
                           onPressed: () {
                             aus
-                                .signup(fname.text, lname.text, widget.pno,
+                                .signup(
+                                    fname.text,
+                                    lname.text,
+                                    widget.pno.toString().replaceAll("+91", ""),
                                     otps.otp)
-                                .then((value) {
-                              print(value.id?.oid);
+                                .then((value) async {
+                              SharedPreferences sd =
+                                  await SharedPreferences.getInstance();
+                              sd.setString("id", value.id!.oid.toString());
+                              sd.setString("fname", value.firstName.toString());
+                              sd.setString("lname", value.lastName.toString());
+                              Get.to(home());
                             });
                           },
                           color: app_theme.primary_color,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/auth/signup_page.dart';
 import 'package:trading_app_hackathon/class/auth_services.dart';
 import 'package:trading_app_hackathon/class/otp_service.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
@@ -63,7 +64,13 @@ class _otp_pageState extends State<otp_page>
                 textAlign: TextAlign.center,
                 style: app_theme.ts_name,
               )),
-              Positioned(top: 500, left: 10, right: -50, child: otp_widget(size: 6,)),
+              Positioned(
+                  top: 500,
+                  left: 10,
+                  right: -50,
+                  child: otp_widget(
+                    size: 6,
+                  )),
               Positioned(
                   top: 600,
                   left: 120,
@@ -78,9 +85,9 @@ class _otp_pageState extends State<otp_page>
                                 //go to LOGIN PAGE
                               } else {
                                 //GO TO SING UP PAGE
+                                Get.offAll(signup_page(pno: widget.pno));
                               }
                             });
-                            Get.offAll(home());
                           } else if (value == -1) {
                             Get.snackbar("Alert", "OTP INVALID",
                                 colorText: Colors.white, barBlur: 30);

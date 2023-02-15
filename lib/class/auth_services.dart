@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:trading_app_hackathon/configs/backend_api.dart';
@@ -38,8 +39,15 @@ class auth_services extends GetxController {
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200) {
-      user_model data = user_model.fromJson(json.decode(response.body));
-      return data;
+      var decoded = json.decode(response.body);
+      if(decoded["error"] == true){
+        Get.snackbar("Something Went Wrong", decoded["message"],
+            colorText: Colors.white, barBlur: 30);
+      }else{
+        user_model data = user_model.fromJson(jsonDecode(response.body));
+        return data;
+      }
+
     }
     return user_model();
   }
