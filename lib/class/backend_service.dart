@@ -22,9 +22,15 @@ class backend_service extends GetxController {
       },
     );
     if (resposne.statusCode != 200) {
-        print(resposne.body);
-       print(jsonEncode({"stock_ids": wl, "user_id": sd.getString("id")}));
+      print(resposne.body);
+      print(jsonEncode({"stock_ids": wl, "user_id": sd.getString("id")}));
       Get.snackbar("Alert", "Error Saving Watchlist", barBlur: 10);
     } else {}
   }
+
+  void get_watchlist_stock() async {
+
+  }
+
+
 }

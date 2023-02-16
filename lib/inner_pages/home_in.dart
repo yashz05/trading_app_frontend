@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/class/finance_data.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import "package:mrx_charts/mrx_charts.dart";
 import 'package:chart_sparkline/chart_sparkline.dart';
@@ -21,6 +22,7 @@ class _home_innerlistState extends State<home_innerlist>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   watch_lsit gwl = Get.put(watch_lsit());
+  finance_data fd = Get.put(finance_data());
   bool wl_loading = true;
 
   @override
@@ -173,15 +175,22 @@ class _home_innerlistState extends State<home_innerlist>
                                                 .primary_color.shade500,
                                           ),
                                         ),
-                                        Text(
-                                          ((index + 1) * 10).toString(),
-                                          style: app_theme.ts_price,
+                                        FutureBuilder(
+                                          future: fd.get_ltp("Symbol", "token"),
+                                          initialData: "0.0",
+                                          builder: (BuildContext context,
+                                              AsyncSnapshot<String> snapshot) {
+                                            return Text(
+                                              "₹"+snapshot.data.toString(),
+                                              style: app_theme.ts_price,
+                                            );
+                                          },
                                         ),
                                       ],
                                     ),
                                   ),
                                   subtitle: Text(
-                                    (index + 1).toString() + " qyt",
+                                    gwl.watch_list[index],
                                     style: app_theme.ts_qyt,
                                   ),
                                 ),
