@@ -26,6 +26,8 @@ class auth_services extends GetxController {
       var data = jsonDecode(resposne.body);
       return int.parse(data["code"].toString());
     } else {
+      Get.snackbar("Something Went Wrong", "Try Again Later",
+          colorText: Colors.white, barBlur: 30);
       return -2;
     }
   }
