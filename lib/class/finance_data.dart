@@ -41,6 +41,32 @@ class finance_data extends GetxController {
     return "0";
   }
 
+  Future<ltp_quote> ohlc(String Symbol, String token, String exg) async {
+    var headers = {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${auth}',
+      'Content-Type': 'application/json',
+      'X-ClientLocalIP': '192.168.168.168',
+      'X-ClientPublicIP': '192.168.168.168',
+      'X-MACAddress': 'fe80::216e:6507:4b90:3719',
+      'X-PrivateKey': 'zVMzZ7so',
+      'X-SourceID': 'WEB',
+      'X-UserType': 'USER',
+    };
+
+    var data = {"exchange": exg, "tradingsymbol": Symbol, "symboltoken": token};
+
+    var url = Uri.parse(
+      'https://apiconnect.angelbroking.com/order-service/rest/secure/angelbroking/order/v1/getLtpData',
+    );
+    var r = await http.post(url, body: jsonEncode(data), headers: headers);
+    if (r.statusCode == 200) {
+      ltp_quote ltp = ltp_quote.fromJson(jsonDecode(r.body));
+      return ltp;
+    }
+    return ltp_quote();
+  }
+
   Future<List<double>> minichart_data(String excg, String token) async {
     //Get 10 days chart Data only
 

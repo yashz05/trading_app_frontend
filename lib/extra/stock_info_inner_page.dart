@@ -11,7 +11,7 @@ class stock_info_inner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 20.0),
-      child: Column(
+      child:data.name != null ? Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -148,7 +148,11 @@ class stock_info_inner extends StatelessWidget {
             ),
           )
         ],
-      ),
+      ) : SizedBox(
+        height: 10,
+          width: 10,
+
+          child: Text("Loading",style: app_theme.ts_name,)),
     );
   }
 }

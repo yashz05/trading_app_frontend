@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/class/finance_data.dart';
 import 'package:trading_app_hackathon/class/news_functions.dart';
 import 'package:trading_app_hackathon/class/watchlist.dart';
 import 'package:trading_app_hackathon/configs/backend_api.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
+import 'package:trading_app_hackathon/model/ltp_quote.dart';
 import 'package:trading_app_hackathon/model/search_model.dart';
 import 'package:trading_app_hackathon/widgets/news_tile.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -22,10 +24,12 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   news_functions nf = Get.put(news_functions());
   watch_lsit wl = Get.put(watch_lsit());
+
   TextEditingController search = TextEditingController();
   var channel =
       WebSocketChannel.connect(Uri.parse(backend_api.search_api_websocket));
   List<search_model> sl = [];
+
 
   @override
   void initState() {

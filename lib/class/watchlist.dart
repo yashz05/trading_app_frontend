@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trading_app_hackathon/class/backend_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:trading_app_hackathon/configs/backend_api.dart';
+import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:trading_app_hackathon/model/search_model.dart';
 
 class watch_lsit extends GetxController {
@@ -18,13 +19,17 @@ class watch_lsit extends GetxController {
 
     SharedPreferences sd = await SharedPreferences.getInstance();
     sd.setString("watch_list", jsonEncode(watch_list));
-    // bs.sync_watchlist();
-    //BUG FOUND
+    Get.snackbar(
+      "Alert",
+      "Stock Added to Watch List",
+      backgroundColor: app_theme.primary_color,
+    );
   }
-    void save_watchlist() async {
-      SharedPreferences sd = await SharedPreferences.getInstance();
-      sd.setString("watch_list", jsonEncode(watch_list));
-    }
+
+  void save_watchlist() async {
+    SharedPreferences sd = await SharedPreferences.getInstance();
+    sd.setString("watch_list", jsonEncode(watch_list));
+  }
 
   Future get_watch_list() async {
     SharedPreferences sd = await SharedPreferences.getInstance();
@@ -42,7 +47,6 @@ class watch_lsit extends GetxController {
     print(id);
     var r = await http.post(Uri.parse(backend_api.get_fav_list),
         body: jsonEncode({"uid": id}));
-    print("object");
-    print(r.body);
+
   }
 }

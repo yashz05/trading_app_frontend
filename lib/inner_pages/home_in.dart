@@ -156,20 +156,23 @@ class _home_innerlistState extends State<home_innerlist>
                                 child: Container(
                                   color: Colors.black,
                                   child: ListTile(
-                                    onTap: () {
-                                      Get.to(() => stock_info(
-                                            data: stock_info_model(
-                                              name: "ADANI ENTERPRISE",
-                                              exchange: "NSE",
-                                              tradingsymbol: "ADANI_ENT",
-                                              stock_id: 1234,
-                                              symboltoken: "ADANI",
-                                              open: "100",
-                                              high: "150",
-                                              low: "80",
-                                              close: "102",
-                                            ),
-                                          ));
+                                    onTap: () async {
+                                      fd.get_ltp(gwl.watch_list[index].symbol!, gwl.watch_list[index].token!, gwl.watch_list[index].exchSeg!).then((value) {
+                                        Get.to(() => stock_info(
+                                          data: stock_info_model(
+                                            name: gwl.watch_list[index].name,
+                                            exchange: gwl.watch_list[index].exchSeg,
+                                            tradingsymbol:gwl.watch_list[index].symbol,
+                                            stock_id: int.parse(gwl.watch_list[index].token!),
+                                            symboltoken: gwl.watch_list[index].token!,
+                                            open: "0",
+                                            high: "0",
+                                            low: "0",
+                                            close:value,
+                                          ),
+                                        ));
+                                      });
+
                                     },
                                     title: Text(
                                       gwl.watch_list[index].name!,

@@ -2,10 +2,12 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/class/finance_data.dart';
 import 'package:trading_app_hackathon/class/news_functions.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import "package:mrx_charts/mrx_charts.dart";
 import 'package:trading_app_hackathon/extra/stock_info_inner_page.dart';
+import 'package:trading_app_hackathon/model/ltp_quote.dart';
 import 'package:trading_app_hackathon/model/news_feed.dart';
 import 'package:get/get.dart';
 import 'package:trading_app_hackathon/model/stock_info_model.dart';
@@ -28,6 +30,8 @@ class _stock_infoState extends State<stock_info>
   late AnimationController _controller;
   news_functions nf = Get.put(news_functions());
   List<news_feed> nfl = [];
+  finance_data fd = Get.put(finance_data());
+  stock_info_model ltp = stock_info_model();
 
   @override
   void initState() {
@@ -36,6 +40,23 @@ class _stock_infoState extends State<stock_info>
     nf.search_news(widget.data.name!).then((value) {
       setState(() {
         nfl = value;
+      });
+    });
+    fd
+        .ohlc(widget.data.tradingsymbol!, widget.data.symboltoken!,
+            widget.data.exchange!)
+        .then((value) {
+      setState(() {
+        ltp = stock_info_model(
+          name: widget.data.name,
+          exchange: widget.data.exchange,
+          tradingsymbol: widget.data.tradingsymbol,
+          symboltoken: widget.data.symboltoken,
+          open: value.data!.open.toString(),
+          high: value.data!.high.toString(),
+          low: value.data!.low.toString(),
+          close: value.data!.close.toString(),
+        );
       });
     });
   }
@@ -122,7 +143,7 @@ class _stock_infoState extends State<stock_info>
                     height: MediaQuery.of(context).size.height * 0.80,
                     child: TabBarView(
                       children: [
-                        stock_info_inner(data: widget.data),
+                        stock_info_inner(data: ltp),
                         nfl != null
                             ? ListView.builder(
                                 itemCount: nfl.length,
