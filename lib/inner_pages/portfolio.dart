@@ -19,6 +19,7 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
   user_model um = user_model();
   paper_trade pd = Get.put(paper_trade());
   List<dynamic> pl = [];
+  var total;
 
   @override
   void initState() {
@@ -28,6 +29,13 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
     pd.get_portfolio().then((value) {
       setState(() {
         pl = value;
+      });
+      pl.forEach((element) {
+        print("test");
+        print( element["qty"] * element["buy_rate"]);
+       setState(() {
+         total += element["qty"] * element["buy_rate"];
+       });
       });
     });
     aus.getuser_data().then((value) {
@@ -46,6 +54,21 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: Container(
+        color: Colors.grey.shade900,
+        height: 50,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(""),
+            Text(
+              total.toString(),
+              style: TextStyle(color: app_theme.primary_color),
+            )
+          ],
+        ),
+      ),
       backgroundColor: Colors.black,
       appBar: AppBar(
         actions: [
@@ -188,44 +211,36 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
                     ),
                   ],
                 ),
-                // ListTile(
-                //   title: Text(
-                //     "Adani ENT",
-                //     style: app_theme.ts_price,
-                //   ),
-                //   trailing: Text(
-                //     "10",
-                //     style: app_theme.ts_price,
-                //   ),
-                //   subtitle: Text(
-                //     "10 qyt",
-                //     style: app_theme.ts_qyt,
-                //   ),
-                // ),
-                Container(
-                  color: Colors.black,
-                  child: pl != null ?
-                      ListView.builder(
-                        shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (BuildContext ctx,int i){
 
-                        return   ListTile(
-                          title: Text(
-                            "Adani ENT",
-                            style: app_theme.ts_price,
-                          ),
-                          trailing: Text(
-                            "10",
-                            style: app_theme.ts_price,
-                          ),
-                          subtitle: Text(
-                            "10 qyt",
-                            style: app_theme.ts_qyt,
-                          ),
-                        );
-                      }) : SizedBox( child: Text("No Stocks",style: app_theme.ts_name,),)
-                )
+                Container(
+                    color: Colors.black,
+                    child: pl != null
+                        ? ListView.builder(
+                            itemCount: pl.length,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (BuildContext ctx, int i) {
+                              return ListTile(
+                                title: Text(
+                                  pl[i]["name"].toString(),
+                                  style: app_theme.ts_price,
+                                ),
+                                trailing: Text(
+                                  "₹" + pl[i]["buy_rate"].toString(),
+                                  style: app_theme.ts_price,
+                                ),
+                                subtitle: Text(
+                                  pl[i]["qty"].toString() + " qyt",
+                                  style: app_theme.ts_qyt,
+                                ),
+                              );
+                            })
+                        : SizedBox(
+                            child: Text(
+                              "No Stocks",
+                              style: app_theme.ts_name,
+                            ),
+                          ))
               ],
             ),
           ),

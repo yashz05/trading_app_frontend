@@ -52,7 +52,7 @@ class _homeState extends State<home> with SingleTickerProviderStateMixin {
           BottomNavigationBarItem(
               icon: Icon(Icons.pie_chart_outline_rounded), label: "Portfolio"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), label: "settings"),
+              icon: Icon(Icons.cases_outlined), label: "Orders"),
         ],
       ),
       body: IndexedStack(
