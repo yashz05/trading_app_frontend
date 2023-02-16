@@ -11,7 +11,7 @@ class finance_data extends GetxController {
       "eyJhbGciOiJIUzUxMiJ9.eyJ0b2tlbiI6IlJFRlJFU0gtVE9LRU4iLCJpYXQiOjE2NzY1MjQ4Mzl9.rbLQpa-2YsAuYU60psMV00KC8PlOtAqwoHs8AmZb5CqrPFfNA8yn-t34m0nflERvgPGVn3PQ-oC3rE6PvvX0QA";
   String feedtoken = "0806354284";
 
-  Future<String> get_ltp(String Symbol, String token) async {
+  Future<String> get_ltp(String Symbol, String token,String exg) async {
     var headers = {
       'Accept': 'application/json',
       'Authorization': 'Bearer ${auth}',
@@ -25,9 +25,9 @@ class finance_data extends GetxController {
     };
 
     var data = {
-      "exchange": "NSE",
-      "tradingsymbol": "SBIN-EQ",
-      "symboltoken": "3045"
+      "exchange": exg,
+      "tradingsymbol": Symbol,
+      "symboltoken": token
     };
 
     var url = Uri.parse(

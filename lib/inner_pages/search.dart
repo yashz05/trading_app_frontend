@@ -153,7 +153,7 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
                                 color: Colors.black,
                                 child: ListTile(
                                   onTap: () {
-                                    wl.ad_to_watch_list(sl[i].token!);
+                                    wl.ad_to_watch_list(sl[i]);
                                     wl.get_watch_list();
                                   },
                                   title: Text(

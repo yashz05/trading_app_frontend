@@ -143,7 +143,7 @@ class _home_innerlistState extends State<home_innerlist>
                                         ));
                                   },
                                   title: Text(
-                                    "Adani ENT",
+                                    gwl.watch_list[index].name!,
                                     style: app_theme.ts_price,
                                   ),
                                   trailing: SizedBox(
@@ -176,12 +176,15 @@ class _home_innerlistState extends State<home_innerlist>
                                           ),
                                         ),
                                         FutureBuilder(
-                                          future: fd.get_ltp("Symbol", "token"),
+                                          future: fd.get_ltp(
+                                              gwl.watch_list[index].symbol!,
+                                              gwl.watch_list[index].token!,
+                                              gwl.watch_list[index].exchSeg!),
                                           initialData: "0.0",
                                           builder: (BuildContext context,
                                               AsyncSnapshot<String> snapshot) {
                                             return Text(
-                                              "₹"+snapshot.data.toString(),
+                                              "₹" + snapshot.data.toString(),
                                               style: app_theme.ts_price,
                                             );
                                           },
@@ -190,7 +193,7 @@ class _home_innerlistState extends State<home_innerlist>
                                     ),
                                   ),
                                   subtitle: Text(
-                                    gwl.watch_list[index],
+                                    gwl.watch_list[index].token.toString(),
                                     style: app_theme.ts_qyt,
                                   ),
                                 ),
