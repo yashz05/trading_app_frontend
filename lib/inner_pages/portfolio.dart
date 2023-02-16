@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/auth_services.dart';
+import 'package:trading_app_hackathon/class/paper_trade.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
 import 'package:trading_app_hackathon/model/user_model.dart';
@@ -16,11 +17,19 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
   late AnimationController _controller;
   auth_services aus = Get.put(auth_services());
   user_model um = user_model();
+  paper_trade pd = Get.put(paper_trade());
+  List<dynamic> pl = [];
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
+    pd.get_demat();
+    pd.get_portfolio().then((value) {
+      setState(() {
+        pl = value;
+      });
+    });
     aus.getuser_data().then((value) {
       setState(() {
         um = value;
@@ -106,9 +115,24 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
                         stops: [0.3, 0.4, 0.8],
                         tileMode: TileMode.clamp),
                   ),
-                  child: Text(
-                    'Current Balance',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Current Balance',
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "₹" + pd.demat_amount.floorToDouble().toString(),
+                        style: TextStyle(
+                            fontSize: 40, fontWeight: FontWeight.w900),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(
@@ -164,224 +188,43 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
                     ),
                   ],
                 ),
+                // ListTile(
+                //   title: Text(
+                //     "Adani ENT",
+                //     style: app_theme.ts_price,
+                //   ),
+                //   trailing: Text(
+                //     "10",
+                //     style: app_theme.ts_price,
+                //   ),
+                //   subtitle: Text(
+                //     "10 qyt",
+                //     style: app_theme.ts_qyt,
+                //   ),
+                // ),
                 Container(
                   color: Colors.black,
-                  child: ListView(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    children: [
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                      ListTile(
-                        title: Text(
-                          "Adani ENT",
-                          style: app_theme.ts_price,
-                        ),
-                        trailing: Text(
-                          "10",
-                          style: app_theme.ts_price,
-                        ),
-                        subtitle: Text(
-                          "10 qyt",
-                          style: app_theme.ts_qyt,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: pl != null ?
+                      ListView.builder(
+                        shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (BuildContext ctx,int i){
+
+                        return   ListTile(
+                          title: Text(
+                            "Adani ENT",
+                            style: app_theme.ts_price,
+                          ),
+                          trailing: Text(
+                            "10",
+                            style: app_theme.ts_price,
+                          ),
+                          subtitle: Text(
+                            "10 qyt",
+                            style: app_theme.ts_qyt,
+                          ),
+                        );
+                      }) : SizedBox( child: Text("No Stocks",style: app_theme.ts_name,),)
                 )
               ],
             ),
