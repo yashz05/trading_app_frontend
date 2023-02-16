@@ -9,6 +9,8 @@ import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
 import 'package:trading_app_hackathon/model/ltp_quote.dart';
 import 'package:trading_app_hackathon/model/search_model.dart';
+import 'package:trading_app_hackathon/model/stock_info_model.dart';
+import 'package:trading_app_hackathon/stock_pages/stock_info.dart';
 import 'package:trading_app_hackathon/widgets/news_tile.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -29,7 +31,8 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
   var channel =
       WebSocketChannel.connect(Uri.parse(backend_api.search_api_websocket));
   List<search_model> sl = [];
-
+  watch_lsit gwl = Get.put(watch_lsit());
+  finance_data fd = Get.put(finance_data());
 
   @override
   void initState() {
@@ -157,8 +160,18 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
                                 color: Colors.black,
                                 child: ListTile(
                                   onTap: () {
-                                    wl.ad_to_watch_list(sl[i]);
-                                    wl.get_watch_list();
+                                    bottom_navigation_bar(stock_info_model(
+                                      name: sl[i].name,
+                                      exchange: sl[i].exchSeg,
+                                      tradingsymbol: sl[i].symbol,
+                                      stock_id: int.parse(sl[i].token!),
+                                      symboltoken: sl[i].token!,
+                                      open: "0",
+                                      high: "0",
+                                      low: "0",
+                                      close: "0",
+                                    ));
+
                                   },
                                   title: Text(
                                     sl[i].name!,
@@ -180,9 +193,15 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
                                       ),
                                     ],
                                   ),
-                                  trailing: Icon(
-                                    Icons.add,
-                                    color: app_theme.primary_color,
+                                  trailing: GestureDetector(
+                                    onTap: (){
+                                      wl.ad_to_watch_list(sl[i]);
+                                      wl.get_watch_list();
+                                    },
+                                    child: Icon(
+                                      Icons.add,
+                                      color: app_theme.primary_color,
+                                    ),
                                   ),
                                 ),
                               );
@@ -205,5 +224,11 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
     setState(() {});
   }
 
-  add_to_watch_list() {}
+  bottom_navigation_bar(stock_info_model sim) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return stock_info(data: sim);
+        });
+  }
 }

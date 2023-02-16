@@ -139,7 +139,7 @@ class stock_info_inner extends StatelessWidget {
                 SizedBox(
                   width: 300,
                   child: Text(
-                    "1500000",
+                    data.close!,
                     textAlign: TextAlign.end,
                     style: app_theme.ts_name,
                   ),

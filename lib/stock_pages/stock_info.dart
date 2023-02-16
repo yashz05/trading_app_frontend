@@ -30,6 +30,7 @@ class _stock_infoState extends State<stock_info>
   late AnimationController _controller;
   news_functions nf = Get.put(news_functions());
   List<news_feed> nfl = [];
+
   finance_data fd = Get.put(finance_data());
   stock_info_model ltp = stock_info_model();
 

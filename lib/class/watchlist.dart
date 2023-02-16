@@ -38,7 +38,7 @@ class watch_lsit extends GetxController {
         .map((data) => search_model.fromJson(data))
         .toList();
     watch_list.value = sml;
-    // print(watch_list);
+
   }
 
   Future get_watch_list_from_server() async {
@@ -47,6 +47,5 @@ class watch_lsit extends GetxController {
     print(id);
     var r = await http.post(Uri.parse(backend_api.get_fav_list),
         body: jsonEncode({"uid": id}));
-
   }
 }
