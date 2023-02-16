@@ -12,7 +12,6 @@ class watch_lsit extends GetxController {
   RxList<search_model> watch_list = <search_model>[].obs;
 
   void ad_to_watch_list(search_model id) async {
-
     if (!watch_list.contains(id)) {
       watch_list.add(id);
     }
@@ -22,6 +21,10 @@ class watch_lsit extends GetxController {
     // bs.sync_watchlist();
     //BUG FOUND
   }
+    void save_watchlist() async {
+      SharedPreferences sd = await SharedPreferences.getInstance();
+      sd.setString("watch_list", jsonEncode(watch_list));
+    }
 
   Future get_watch_list() async {
     SharedPreferences sd = await SharedPreferences.getInstance();
@@ -29,7 +32,7 @@ class watch_lsit extends GetxController {
     List<search_model> sml = (json.decode(wl.toString()) as List)
         .map((data) => search_model.fromJson(data))
         .toList();
-     watch_list.value = sml;
+    watch_list.value = sml;
     // print(watch_list);
   }
 

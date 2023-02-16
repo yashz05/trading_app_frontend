@@ -6,4 +6,5 @@ class angel_endpoints {
       "wss://omnefeeds.angelbroking.com/NestHtml5Mobile/socket/stream";
   static String get_ltp =
       base_url + "/rest/secure/angelbroking/order/v1/getLtpData";
+
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/finance_data.dart';
+import 'package:trading_app_hackathon/configs/angel_endpoints.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import "package:mrx_charts/mrx_charts.dart";
 import 'package:chart_sparkline/chart_sparkline.dart';
@@ -10,6 +11,8 @@ import 'package:get/get.dart';
 import 'package:trading_app_hackathon/model/stock_info_model.dart';
 import 'package:trading_app_hackathon/stock_pages/stock_info.dart';
 import 'package:trading_app_hackathon/class/watchlist.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 class home_innerlist extends StatefulWidget {
   const home_innerlist({Key? key}) : super(key: key);
@@ -45,15 +48,7 @@ class _home_innerlistState extends State<home_innerlist>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: app_theme.primary_color,
-        child: Icon(
-          Icons.add,
-          color: Colors.black,
-        ),
-        onPressed: () {},
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
       backgroundColor: Colors.black,
       body: Stack(
         children: [
@@ -124,77 +119,133 @@ class _home_innerlistState extends State<home_innerlist>
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                color: Colors.black,
-                                child: ListTile(
-                                  onTap: () {
-                                    Get.to(() => stock_info(
-                                          data: stock_info_model(
-                                            name: "ADANI ENTERPRISE",
-                                            exchange: "NSE",
-                                            tradingsymbol: "ADANI_ENT",
-                                            stock_id: 1234,
-                                            symboltoken: "ADANI",
-                                            open: "100",
-                                            high: "150",
-                                            low: "80",
-                                            close: "102",
-                                          ),
-                                        ));
-                                  },
-                                  title: Text(
-                                    gwl.watch_list[index].name!,
-                                    style: app_theme.ts_price,
+                              return Dismissible(
+                                key: Key(gwl.watch_list[index].token!),
+                                onDismissed: (direction) {
+                                  // Remove the item from the data source.
+                                  setState(() {
+                                    gwl.watch_list.removeAt(index);
+                                    gwl.save_watchlist();
+                                  });
+                                },
+                                background: Container(
+                                  color: Colors.red,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Icon(
+                                          Icons.delete,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Icon(
+                                          Icons.delete,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  trailing: SizedBox(
-                                    width: 200,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(
-                                          width: 100,
-                                          child: Sparkline(
-                                            data: [
-                                              0.0,
-                                              1.0,
-                                              1.5,
-                                              2.0,
-                                              0.0,
-                                              0.0,
-                                              -0.5,
-                                              -1.0,
-                                              -0.5,
-                                              0.0,
-                                              0.0
-                                            ],
-                                            useCubicSmoothing: true,
-                                            cubicSmoothingFactor: 0.2,
-                                            lineWidth: 5.0,
-                                            lineColor: app_theme
-                                                .primary_color.shade500,
-                                          ),
-                                        ),
-                                        FutureBuilder(
-                                          future: fd.get_ltp(
-                                              gwl.watch_list[index].symbol!,
-                                              gwl.watch_list[index].token!,
-                                              gwl.watch_list[index].exchSeg!),
-                                          initialData: "0.0",
-                                          builder: (BuildContext context,
-                                              AsyncSnapshot<String> snapshot) {
-                                            return Text(
-                                              "₹" + snapshot.data.toString(),
-                                              style: app_theme.ts_price,
-                                            );
-                                          },
-                                        ),
-                                      ],
+                                ),
+                                child: Container(
+                                  color: Colors.black,
+                                  child: ListTile(
+                                    onTap: () {
+                                      Get.to(() => stock_info(
+                                            data: stock_info_model(
+                                              name: "ADANI ENTERPRISE",
+                                              exchange: "NSE",
+                                              tradingsymbol: "ADANI_ENT",
+                                              stock_id: 1234,
+                                              symboltoken: "ADANI",
+                                              open: "100",
+                                              high: "150",
+                                              low: "80",
+                                              close: "102",
+                                            ),
+                                          ));
+                                    },
+                                    title: Text(
+                                      gwl.watch_list[index].name!,
+                                      style: app_theme.ts_price,
                                     ),
-                                  ),
-                                  subtitle: Text(
-                                    gwl.watch_list[index].token.toString(),
-                                    style: app_theme.ts_qyt,
+                                    trailing: SizedBox(
+                                      width: 200,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(
+                                            width: 100,
+                                            child: FutureBuilder<List<double>>(
+                                                future: fd.minichart_data(
+                                                    gwl.watch_list[index]
+                                                        .exchSeg!,
+                                                    gwl.watch_list[index]
+                                                        .token!),
+                                                initialData: [
+                                                  0.0,
+                                                  0.0,
+                                                  0.0,
+                                                  0.0
+                                                ],
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<List<double>>
+                                                        snapshot) {
+                                                  if (snapshot.hasError) {
+                                                    return Center(
+                                                      child: Text(
+                                                        '${snapshot.error} occured',
+                                                        style: TextStyle(
+                                                            fontSize: 18),
+                                                      ),
+                                                    );
+                                                  } else if (snapshot.hasData) {
+                                                    return Sparkline(
+                                                      data: snapshot.data!,
+                                                      useCubicSmoothing: true,
+                                                      cubicSmoothingFactor: 0.2,
+                                                      lineWidth: 5.0,
+                                                      lineColor: app_theme
+                                                          .primary_color
+                                                          .shade500,
+                                                    );
+                                                  } else {
+                                                    return SizedBox(
+                                                      width: 20,
+                                                      height: 50,
+                                                    );
+                                                  }
+                                                }),
+                                          ),
+                                          FutureBuilder(
+                                            future: fd.get_ltp(
+                                                gwl.watch_list[index].symbol!,
+                                                gwl.watch_list[index].token!,
+                                                gwl.watch_list[index].exchSeg!),
+                                            initialData: "0.0",
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<String>
+                                                    snapshot) {
+                                              return Text(
+                                                "₹" + snapshot.data.toString(),
+                                                style: app_theme.ts_price,
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      gwl.watch_list[index].token.toString(),
+                                      style: app_theme.ts_qyt,
+                                    ),
                                   ),
                                 ),
                               );
@@ -212,6 +263,9 @@ class _home_innerlistState extends State<home_innerlist>
       ),
     );
   }
+
+  //get real time stock update
+  void get_realtime() async {}
 
   List<ChartLayer> layers() {
     final from = DateTime(2021, 4);
