@@ -45,7 +45,9 @@ class auth_services extends GetxController {
         Get.snackbar("Something Went Wrong", decoded["message"],
             colorText: Colors.white, barBlur: 30);
       } else {
-        user_model data = user_model.fromJson(jsonDecode(response.body));
+        user_model data = user_model
+            .fromJson(jsonDecode(response.body.replaceAll("/\$/g", "")));
+        print(response.body.replaceAll(new RegExp('/\$/g'), ""));
         return data;
       }
     }
@@ -55,6 +57,7 @@ class auth_services extends GetxController {
   Future<user_model> getuser_data() async {
     SharedPreferences sd = await SharedPreferences.getInstance();
     var data = user_model(
+      uid: sd.getString("id"),
       firstName: sd.getString("fname"),
       lastName: sd.getString("lname"),
     );

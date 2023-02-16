@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/news_functions.dart';
+import 'package:trading_app_hackathon/class/watchlist.dart';
 import 'package:trading_app_hackathon/configs/backend_api.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
@@ -20,6 +21,7 @@ class search extends StatefulWidget {
 class _searchState extends State<search> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   news_functions nf = Get.put(news_functions());
+  watch_lsit wl = Get.put(watch_lsit());
   TextEditingController search = TextEditingController();
   var channel =
       WebSocketChannel.connect(Uri.parse(backend_api.search_api_websocket));
@@ -39,7 +41,6 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
         setState(() {
           sl = new_sl;
         });
-        print(sl.length);
       },
       onError: (error) => print(error),
     );
@@ -151,6 +152,10 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
                               return Container(
                                 color: Colors.black,
                                 child: ListTile(
+                                  onTap: () {
+                                    wl.ad_to_watch_list(sl[i].token!);
+                                    wl.get_watch_list();
+                                  },
                                   title: Text(
                                     sl[i].name!,
                                     style: app_theme.ts_name,
@@ -190,14 +195,11 @@ class _searchState extends State<search> with SingleTickerProviderStateMixin {
   }
 
   search_stock() {
-    print("added");
     if (search.text.isNotEmpty) {
-      channel.sink.add(search.text);
+      channel.sink.add(search.text.toUpperCase());
     }
     setState(() {});
   }
 
-  add_to_watch_list() {
-
-  }
+  add_to_watch_list() {}
 }

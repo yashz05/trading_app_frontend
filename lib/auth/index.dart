@@ -26,7 +26,7 @@ class _indexState extends State<index> with SingleTickerProviderStateMixin {
     _controller = AnimationController(vsync: this);
     aus.getuser_data().then((value) {
       print(value.lastName);
-      if(value.firstName != null && value.lastName != null ){
+      if (value.firstName != null && value.lastName != null) {
         Get.offAll(home());
       }
     });

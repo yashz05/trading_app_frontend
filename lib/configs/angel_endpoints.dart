@@ -4,4 +4,6 @@ class angel_endpoints {
       "https://apiconnect.angelbroking.com/rest/secure/angelbroking/historical/v1/getCandleData";
   static String websocket =
       "wss://omnefeeds.angelbroking.com/NestHtml5Mobile/socket/stream";
+  static String get_ltp =
+      base_url + "/rest/secure/angelbroking/order/v1/getLtpData";
 }

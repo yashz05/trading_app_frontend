@@ -8,6 +8,7 @@ import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:get/get.dart';
 import 'package:trading_app_hackathon/model/stock_info_model.dart';
 import 'package:trading_app_hackathon/stock_pages/stock_info.dart';
+import 'package:trading_app_hackathon/class/watchlist.dart';
 
 class home_innerlist extends StatefulWidget {
   const home_innerlist({Key? key}) : super(key: key);
@@ -19,11 +20,18 @@ class home_innerlist extends StatefulWidget {
 class _home_innerlistState extends State<home_innerlist>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  watch_lsit gwl = Get.put(watch_lsit());
+  bool wl_loading = true;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
+    gwl.get_watch_list().then((value) {
+      setState(() {
+        wl_loading = !wl_loading;
+      });
+    });
   }
 
   @override
@@ -107,76 +115,83 @@ class _home_innerlistState extends State<home_innerlist>
                   child: Chart(layers: layers()),
                 ),
                 Container(
-                  child: ListView.builder(
-                    itemCount: 100,
-                    padding: EdgeInsets.only(top: 30),
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        color: Colors.black,
-                        child: ListTile(
-                          onTap: () {
-                            Get.to(() => stock_info(
-                                  data: stock_info_model(
-                                    name: "ADANI ENTERPRISE",
-                                    exchange: "NSE",
-                                    tradingsymbol: "ADANI_ENT",
-                                    stock_id: 1234,
-                                    symboltoken: "ADANI",
-                                    open: "100",
-                                    high: "150",
-                                    low: "80",
-                                    close: "102",
+                  child: wl_loading == false
+                      ? Obx(() => ListView.builder(
+                            itemCount: gwl.watch_list.length,
+                            padding: EdgeInsets.only(top: 30),
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                color: Colors.black,
+                                child: ListTile(
+                                  onTap: () {
+                                    Get.to(() => stock_info(
+                                          data: stock_info_model(
+                                            name: "ADANI ENTERPRISE",
+                                            exchange: "NSE",
+                                            tradingsymbol: "ADANI_ENT",
+                                            stock_id: 1234,
+                                            symboltoken: "ADANI",
+                                            open: "100",
+                                            high: "150",
+                                            low: "80",
+                                            close: "102",
+                                          ),
+                                        ));
+                                  },
+                                  title: Text(
+                                    "Adani ENT",
+                                    style: app_theme.ts_price,
                                   ),
-                                ));
-                          },
-                          title: Text(
-                            "Adani ENT",
-                            style: app_theme.ts_price,
-                          ),
-                          trailing: SizedBox(
-                            width: 200,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: 100,
-                                  child: Sparkline(
-                                    data: [
-                                      0.0,
-                                      1.0,
-                                      1.5,
-                                      2.0,
-                                      0.0,
-                                      0.0,
-                                      -0.5,
-                                      -1.0,
-                                      -0.5,
-                                      0.0,
-                                      0.0
-                                    ],
-                                    useCubicSmoothing: true,
-                                    cubicSmoothingFactor: 0.2,
-                                    lineWidth: 5.0,
-                                    lineColor: app_theme.primary_color.shade500,
+                                  trailing: SizedBox(
+                                    width: 200,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(
+                                          width: 100,
+                                          child: Sparkline(
+                                            data: [
+                                              0.0,
+                                              1.0,
+                                              1.5,
+                                              2.0,
+                                              0.0,
+                                              0.0,
+                                              -0.5,
+                                              -1.0,
+                                              -0.5,
+                                              0.0,
+                                              0.0
+                                            ],
+                                            useCubicSmoothing: true,
+                                            cubicSmoothingFactor: 0.2,
+                                            lineWidth: 5.0,
+                                            lineColor: app_theme
+                                                .primary_color.shade500,
+                                          ),
+                                        ),
+                                        Text(
+                                          ((index + 1) * 10).toString(),
+                                          style: app_theme.ts_price,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    (index + 1).toString() + " qyt",
+                                    style: app_theme.ts_qyt,
                                   ),
                                 ),
-                                Text(
-                                  ((index + 1) * 10).toString(),
-                                  style: app_theme.ts_price,
-                                ),
-                              ],
-                            ),
-                          ),
-                          subtitle: Text(
-                            (index + 1).toString() + " qyt",
-                            style: app_theme.ts_qyt,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                              );
+                            },
+                          ))
+                      : Center(
+                          child: CircularProgressIndicator(
+                          color: app_theme.primary_color,
+                        )),
                 )
               ],
             ),

@@ -194,9 +194,10 @@ class _signup_pageState extends State<signup_page>
                                     widget.pno.toString().replaceAll("+91", ""),
                                     otps.otp)
                                 .then((value) async {
+                              print(value.uid);
                               SharedPreferences sd =
                                   await SharedPreferences.getInstance();
-                              sd.setString("id", value.id!.oid.toString());
+                              sd.setString("id", value.uid.toString());
                               sd.setString("fname", value.firstName.toString());
                               sd.setString("lname", value.lastName.toString());
                               Get.to(home());
