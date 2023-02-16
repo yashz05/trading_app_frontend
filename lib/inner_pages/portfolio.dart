@@ -32,7 +32,7 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
       });
       pl.forEach((element) {
         print("test");
-        print( element["qty"] * element["buy_rate"]);
+        print( total);
        setState(() {
          total += element["qty"] * element["buy_rate"];
        });
@@ -62,10 +62,10 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(""),
-            Text(
-              total.toString(),
-              style: TextStyle(color: app_theme.primary_color),
-            )
+            // Text(
+            //   total.toString(),
+            //   style: TextStyle(color: app_theme.primary_color),
+            // )
           ],
         ),
       ),
