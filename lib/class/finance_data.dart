@@ -7,7 +7,6 @@ import 'package:trading_app_hackathon/model/ltp_quote.dart';
 import 'package:trading_app_hackathon/configs/angel_endpoints.dart';
 import 'package:trading_app_hackathon/model/history_model.dart';
 import 'package:intl/intl.dart';
-import "package:mrx_charts/mrx_charts.dart";
 
 class finance_data extends GetxController {
   String auth =
@@ -146,7 +145,6 @@ class finance_data extends GetxController {
 
       List cld = [];
       m.data.forEach((element) {
-
         var daydata = {
           "day": DateFormat("yyyy-MM-dd")
               .parse(element[0])
@@ -158,6 +156,59 @@ class finance_data extends GetxController {
       });
 
       return cld;
+    }
+
+    return [];
+  }
+
+  Future<List> candle_stick_data(String excg, String token) async {
+    //Get 10 days chart Data only
+
+    var to = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    var from = DateFormat('yyyy-MM-dd')
+        .format(DateTime.now().subtract(Duration(days: 200)));
+
+    var body = {
+      "exchange": "${excg}",
+      "symboltoken": "${token}",
+      "interval": "ONE_DAY",
+      "fromdate": "${from} 09:15",
+      "todate": "${to} 03:30"
+    };
+
+    var headers = {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${auth}',
+      'Content-Type': 'application/json',
+      'X-ClientLocalIP': '192.168.168.168',
+      'X-ClientPublicIP': '192.168.168.168',
+      'X-MACAddress': 'fe89::216e:6507:4b90:3719',
+      'X-PrivateKey': 'zVMzZ7so',
+      'X-SourceID': 'WEB',
+      'X-UserType': 'USER',
+    };
+
+    var history_data = await http.post(Uri.parse(angel_endpoints.history_api),
+        body: jsonEncode(body), headers: headers);
+
+    if (history_data.statusCode == 200) {
+      HistoryModel m = historyModelFromJson(history_data.body);
+      print(history_data.body);
+      List cld = [];
+      m.data.forEach((element) {
+        //converting to UNOX TIMESTAMP OR EPOCH because C
+        element[0] =
+            DateFormat("yyyy-MM-dd").parse(element[0]).millisecondsSinceEpoch;
+        element[1] = element[1].toString();
+        element[2] = element[2].toString();
+        element[3] = element[3].toString();
+        element[4] = element[4].toString();
+        element[5] = element[5].toString();
+      });
+
+      return m.data;
+    } else {
+      print(history_data.body);
     }
 
     return [];

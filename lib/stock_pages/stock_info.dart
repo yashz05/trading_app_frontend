@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/finance_data.dart';
 import 'package:trading_app_hackathon/class/news_functions.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
+import 'package:trading_app_hackathon/extra/detail_chart.dart';
 import 'package:trading_app_hackathon/extra/stock_info_inner_page.dart';
 import 'package:trading_app_hackathon/model/news_feed.dart';
 import 'package:get/get.dart';
@@ -140,6 +141,23 @@ class _stock_infoState extends State<stock_info>
                   SizedBox(
                     height: 120,
                     child: AppBar(
+                        actions: [
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(detail_chart(
+                                  name: widget.data.name!,
+                                  exch: widget.data.exchange!,
+                                  token: widget.data.symboltoken!));
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 20.0, right: 20),
+                              child: Text(
+                                "View Chart",
+                                style: app_theme.ts_name,
+                              ),
+                            ),
+                          )
+                        ],
                         elevation: 0,
                         backgroundColor: Colors.transparent,
                         leading: IconButton(

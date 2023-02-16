@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/finance_data.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
-import "package:mrx_charts/mrx_charts.dart";
+
 import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:get/get.dart';
 import 'package:trading_app_hackathon/model/stock_info_model.dart';
