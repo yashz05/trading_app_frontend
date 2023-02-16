@@ -1,17 +1,14 @@
-import 'dart:math';
 import 'dart:ui';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/finance_data.dart';
 import 'package:trading_app_hackathon/class/news_functions.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
-import "package:mrx_charts/mrx_charts.dart";
 import 'package:trading_app_hackathon/extra/stock_info_inner_page.dart';
-import 'package:trading_app_hackathon/model/ltp_quote.dart';
 import 'package:trading_app_hackathon/model/news_feed.dart';
 import 'package:get/get.dart';
 import 'package:trading_app_hackathon/model/stock_info_model.dart';
 import 'package:trading_app_hackathon/widgets/news_tile.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class stock_info extends StatefulWidget {
   final stock_info_model data;
@@ -33,6 +30,38 @@ class _stock_infoState extends State<stock_info>
 
   finance_data fd = Get.put(finance_data());
   stock_info_model ltp = stock_info_model();
+  List cld = [];
+
+  //SAME WIDGET FROM HOME
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(color: Colors.white, fontSize: 10);
+    String text;
+    text = value.toString();
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 6,
+      child: Text(text, style: style, textAlign: TextAlign.center),
+    );
+  }
+
+  Widget bottomwidget(double value, TitleMeta meta) {
+    const style = TextStyle(color: Colors.white, fontSize: 10);
+    String text;
+    text = DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true)
+            .add(Duration(days: 1))
+            .day
+            .toString() +
+        '/' +
+        DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true)
+            .month
+            .toString();
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 6,
+      child: Text(text, style: style, textAlign: TextAlign.center),
+    );
+  }
 
   @override
   void initState() {
@@ -41,6 +70,13 @@ class _stock_infoState extends State<stock_info>
     nf.search_news(widget.data.name!).then((value) {
       setState(() {
         nfl = value;
+      });
+    });
+    fd
+        .quick_view_chart(widget.data.exchange!, widget.data.symboltoken!)
+        .then((value) {
+      setState(() {
+        cld = value;
       });
     });
     fd
@@ -123,7 +159,51 @@ class _stock_infoState extends State<stock_info>
                   Container(
                     margin: EdgeInsets.only(top: 20),
                     height: 240,
-                    child: Chart(layers: layers()),
+                    child: LineChart(
+                      LineChartData(
+                        titlesData: FlTitlesData(
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 30,
+                              getTitlesWidget: leftTitleWidgets,
+                            ),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 20,
+                              getTitlesWidget: bottomwidget,
+                            ),
+                          ),
+                        ),
+                        borderData: FlBorderData(show: false),
+                        lineBarsData: [
+                          LineChartBarData(
+                            color: app_theme.primary_color,
+                            isCurved: true,
+                            isStrokeCapRound: true,
+                            barWidth: 3,
+                            spots: cld
+                                .map((point) =>
+                                    FlSpot(point["day"], point["value"]))
+                                .toList(),
+                            dotData: FlDotData(
+                              show: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                      swapAnimationDuration: Duration(milliseconds: 150),
+                      swapAnimationCurve: Curves.bounceIn,
+                      // Optional
+                    ),
                   ),
                   TabBar(
                     labelColor: app_theme.primary_color,
@@ -168,81 +248,5 @@ class _stock_infoState extends State<stock_info>
     );
   }
 
-  List<ChartLayer> layers() {
-    final from = DateTime(2021, 4);
-    final to = DateTime(2021, 8);
-    final frequency =
-        (to.millisecondsSinceEpoch - from.millisecondsSinceEpoch) / 3.0;
-    return [
-      ChartHighlightLayer(
-        shape: () => ChartHighlightLineShape<ChartLineDataItem>(
-          backgroundColor: app_theme.primary_color.shade900,
-          currentPos: (item) => item.currentValuePos,
-          radius: const BorderRadius.all(Radius.circular(8.0)),
-          width: 60.0,
-        ),
-      ),
-      ChartAxisLayer(
-        settings: ChartAxisSettings(
-          x: ChartAxisSettingsAxis(
-            frequency: frequency,
-            max: to.millisecondsSinceEpoch.toDouble(),
-            min: from.millisecondsSinceEpoch.toDouble(),
-            textStyle: TextStyle(
-              color: Colors.white.withOpacity(0.6),
-              fontSize: 10.0,
-            ),
-          ),
-          y: ChartAxisSettingsAxis(
-            frequency: 100.0,
-            max: 400.0,
-            min: 0.0,
-            textStyle: TextStyle(
-              color: Colors.white.withOpacity(0.6),
-              fontSize: 10.0,
-            ),
-          ),
-        ),
-        labelX: (value) => DateFormat('MMM')
-            .format(DateTime.fromMillisecondsSinceEpoch(value.toInt())),
-        labelY: (value) => value.toInt().toString(),
-      ),
-      ChartLineLayer(
-        items: List.generate(
-          4,
-          (index) => ChartLineDataItem(
-            x: (index * frequency) + from.millisecondsSinceEpoch,
-            value: Random().nextInt(380) + 20,
-          ),
-        ),
-        settings: ChartLineSettings(
-          color: app_theme.primary_color,
-          thickness: 4.0,
-        ),
-      ),
-      ChartTooltipLayer(
-        shape: () => ChartTooltipLineShape<ChartLineDataItem>(
-          backgroundColor: Colors.white,
-          circleBackgroundColor: Colors.white,
-          circleBorderColor: app_theme.primary_color,
-          circleSize: 4.0,
-          circleBorderThickness: 2.0,
-          currentPos: (item) => item.currentValuePos,
-          onTextValue: (item) => '€${item.value.toString()}',
-          marginBottom: 6.0,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12.0,
-            vertical: 8.0,
-          ),
-          radius: 6.0,
-          textStyle: TextStyle(
-            color: app_theme.primary_color,
-            letterSpacing: 0.2,
-            fontSize: 14.0,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    ];
-  }
+//REMOVED BECAUSE CHARTS TO HEAVY
 }

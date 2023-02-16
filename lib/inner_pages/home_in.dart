@@ -1,9 +1,6 @@
-import 'dart:math';
 import 'dart:ui';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/finance_data.dart';
-import 'package:trading_app_hackathon/configs/angel_endpoints.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import "package:mrx_charts/mrx_charts.dart";
 import 'package:chart_sparkline/chart_sparkline.dart';
@@ -11,8 +8,7 @@ import 'package:get/get.dart';
 import 'package:trading_app_hackathon/model/stock_info_model.dart';
 import 'package:trading_app_hackathon/stock_pages/stock_info.dart';
 import 'package:trading_app_hackathon/class/watchlist.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
+import 'package:fl_chart/fl_chart.dart';
 
 class home_innerlist extends StatefulWidget {
   const home_innerlist({Key? key}) : super(key: key);
@@ -27,6 +23,37 @@ class _home_innerlistState extends State<home_innerlist>
   watch_lsit gwl = Get.put(watch_lsit());
   finance_data fd = Get.put(finance_data());
   bool wl_loading = true;
+  List cld = [];
+
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(color: Colors.white, fontSize: 10);
+    String text;
+    text = value.toString();
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 6,
+      child: Text(text, style: style, textAlign: TextAlign.center),
+    );
+  }
+
+  Widget bottomwidget(double value, TitleMeta meta) {
+    const style = TextStyle(color: Colors.white, fontSize: 10);
+    String text;
+    text = DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true)
+            .add(Duration(days: 1))
+            .day
+            .toString() +
+        '/' +
+        DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true)
+            .month
+            .toString();
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 6,
+      child: Text(text, style: style, textAlign: TextAlign.center),
+    );
+  }
 
   @override
   void initState() {
@@ -36,6 +63,12 @@ class _home_innerlistState extends State<home_innerlist>
       setState(() {
         wl_loading = !wl_loading;
       });
+    });
+    fd.quick_view_chart("NSE", "11971").then((value) {
+      setState(() {
+        cld = value;
+      });
+      setState(() {});
     });
   }
 
@@ -48,7 +81,6 @@ class _home_innerlistState extends State<home_innerlist>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: Colors.black,
       body: Stack(
         children: [
@@ -109,7 +141,51 @@ class _home_innerlistState extends State<home_innerlist>
                 Container(
                   margin: EdgeInsets.only(top: 20),
                   height: 240,
-                  child: Chart(layers: layers()),
+                  child: LineChart(
+                    LineChartData(
+                      titlesData: FlTitlesData(
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 30,
+                            getTitlesWidget: leftTitleWidgets,
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 20,
+                            getTitlesWidget: bottomwidget,
+                          ),
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      lineBarsData: [
+                        LineChartBarData(
+                          color: app_theme.primary_color,
+                          isCurved: true,
+                          isStrokeCapRound: true,
+                          barWidth: 3,
+                          spots: cld
+                              .map((point) =>
+                                  FlSpot(point["day"], point["value"]))
+                              .toList(),
+                          dotData: FlDotData(
+                            show: false,
+                          ),
+                        ),
+                      ],
+                    ),
+                    swapAnimationDuration: Duration(milliseconds: 150),
+                    swapAnimationCurve: Curves.bounceIn,
+                    // Optional
+                  ),
                 ),
                 Container(
                   child: wl_loading == false
@@ -157,22 +233,31 @@ class _home_innerlistState extends State<home_innerlist>
                                   color: Colors.black,
                                   child: ListTile(
                                     onTap: () async {
-                                      fd.get_ltp(gwl.watch_list[index].symbol!, gwl.watch_list[index].token!, gwl.watch_list[index].exchSeg!).then((value) {
+                                      fd
+                                          .get_ltp(
+                                              gwl.watch_list[index].symbol!,
+                                              gwl.watch_list[index].token!,
+                                              gwl.watch_list[index].exchSeg!)
+                                          .then((value) {
                                         Get.to(() => stock_info(
-                                          data: stock_info_model(
-                                            name: gwl.watch_list[index].name,
-                                            exchange: gwl.watch_list[index].exchSeg,
-                                            tradingsymbol:gwl.watch_list[index].symbol,
-                                            stock_id: int.parse(gwl.watch_list[index].token!),
-                                            symboltoken: gwl.watch_list[index].token!,
-                                            open: "0",
-                                            high: "0",
-                                            low: "0",
-                                            close:value,
-                                          ),
-                                        ));
+                                              data: stock_info_model(
+                                                name:
+                                                    gwl.watch_list[index].name,
+                                                exchange: gwl
+                                                    .watch_list[index].exchSeg,
+                                                tradingsymbol: gwl
+                                                    .watch_list[index].symbol,
+                                                stock_id: int.parse(gwl
+                                                    .watch_list[index].token!),
+                                                symboltoken: gwl
+                                                    .watch_list[index].token!,
+                                                open: "0",
+                                                high: "0",
+                                                low: "0",
+                                                close: value,
+                                              ),
+                                            ));
                                       });
-
                                     },
                                     title: Text(
                                       gwl.watch_list[index].name!,
@@ -265,86 +350,5 @@ class _home_innerlistState extends State<home_innerlist>
         ],
       ),
     );
-  }
-
-  //get real time stock update
-  void get_realtime() async {}
-
-  List<ChartLayer> layers() {
-    final from = DateTime(2021, 4);
-    final to = DateTime(2021, 8);
-    final frequency =
-        (to.millisecondsSinceEpoch - from.millisecondsSinceEpoch) / 3.0;
-    return [
-      ChartHighlightLayer(
-        shape: () => ChartHighlightLineShape<ChartLineDataItem>(
-          backgroundColor: app_theme.primary_color.shade900,
-          currentPos: (item) => item.currentValuePos,
-          radius: const BorderRadius.all(Radius.circular(8.0)),
-          width: 60.0,
-        ),
-      ),
-      ChartAxisLayer(
-        settings: ChartAxisSettings(
-          x: ChartAxisSettingsAxis(
-            frequency: frequency,
-            max: to.millisecondsSinceEpoch.toDouble(),
-            min: from.millisecondsSinceEpoch.toDouble(),
-            textStyle: TextStyle(
-              color: Colors.white.withOpacity(0.6),
-              fontSize: 10.0,
-            ),
-          ),
-          y: ChartAxisSettingsAxis(
-            frequency: 100.0,
-            max: 400.0,
-            min: 0.0,
-            textStyle: TextStyle(
-              color: Colors.white.withOpacity(0.6),
-              fontSize: 10.0,
-            ),
-          ),
-        ),
-        labelX: (value) => DateFormat('MMM')
-            .format(DateTime.fromMillisecondsSinceEpoch(value.toInt())),
-        labelY: (value) => value.toInt().toString(),
-      ),
-      ChartLineLayer(
-        items: List.generate(
-          4,
-          (index) => ChartLineDataItem(
-            x: (index * frequency) + from.millisecondsSinceEpoch,
-            value: Random().nextInt(380) + 20,
-          ),
-        ),
-        settings: ChartLineSettings(
-          color: app_theme.primary_color,
-          thickness: 4.0,
-        ),
-      ),
-      ChartTooltipLayer(
-        shape: () => ChartTooltipLineShape<ChartLineDataItem>(
-          backgroundColor: Colors.white,
-          circleBackgroundColor: Colors.white,
-          circleBorderColor: app_theme.primary_color,
-          circleSize: 4.0,
-          circleBorderThickness: 2.0,
-          currentPos: (item) => item.currentValuePos,
-          onTextValue: (item) => '€${item.value.toString()}',
-          marginBottom: 6.0,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12.0,
-            vertical: 8.0,
-          ),
-          radius: 6.0,
-          textStyle: TextStyle(
-            color: app_theme.primary_color,
-            letterSpacing: 0.2,
-            fontSize: 14.0,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    ];
   }
 }

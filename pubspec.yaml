@@ -29,6 +29,7 @@ dev_dependencies:
   webview_flutter: any #BSD-3-Clause
   shared_preferences: any #BSD-3-Clause
   web_socket_channel: any #BSD-3-Clause
+  fl_chart: any #MIT
 
 
 flutter:
