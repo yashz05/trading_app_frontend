@@ -60,6 +60,7 @@ class _home_innerlistState extends State<home_innerlist>
     super.initState();
     _controller = AnimationController(vsync: this);
     gwl.get_watch_list().then((value) {
+
       setState(() {
         wl_loading = !wl_loading;
       });

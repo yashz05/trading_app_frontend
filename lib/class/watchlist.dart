@@ -34,11 +34,20 @@ class watch_lsit extends GetxController {
   Future get_watch_list() async {
     SharedPreferences sd = await SharedPreferences.getInstance();
     var wl = sd.getString("watch_list");
-    List<search_model> sml = (json.decode(wl.toString()) as List)
-        .map((data) => search_model.fromJson(data))
-        .toList();
-    watch_list.value = sml;
-
+    if (wl == null) {
+      ad_to_watch_list(search_model(
+          token: "26000", name: "NIFTY", symbol: "NIFTY", exchSeg: "NSE"));
+      ad_to_watch_list(search_model(
+          token: "26009",
+          name: "BANKNIFTY",
+          symbol: "BANKNIFTY",
+          exchSeg: "NSE"));
+    } else {
+      List<search_model> sml = (json.decode(wl.toString()) as List)
+          .map((data) => search_model.fromJson(data))
+          .toList();
+      watch_list.value = sml;
+    }
   }
 
   Future get_watch_list_from_server() async {

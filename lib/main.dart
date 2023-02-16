@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/auth/index.dart';
+import 'package:trading_app_hackathon/auth/otp_page.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
 

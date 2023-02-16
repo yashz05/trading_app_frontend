@@ -5,4 +5,5 @@ class backend_api {
   static String search_api_websocket = "ws://128.199.17.71:8090/ws/stock-name";
   static String sync_watchlist = base_api + "user/add-watchlist";
   static String get_fav_list = base_api + "user/favourite-stocks";
+  static String pin_verify = base_api + "user/login";
 }

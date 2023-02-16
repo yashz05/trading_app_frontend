@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trading_app_hackathon/auth/login_page.dart';
 import 'package:trading_app_hackathon/auth/signup_page.dart';
 import 'package:trading_app_hackathon/class/auth_services.dart';
 import 'package:trading_app_hackathon/class/otp_service.dart';
@@ -78,11 +79,14 @@ class _otp_pageState extends State<otp_page>
                     width: 200,
                     child: MaterialButton(
                       onPressed: () {
+
                         otps.verify_otp(widget.pno).then((value) {
                           if (value == 1) {
                             aus.check_pno(widget.pno).then((value) {
+                              print(value);
                               if (value == 1) {
                                 //go to LOGIN PAGE
+                                Get.offAll(login_page(pno: widget.pno));
                               } else {
                                 //GO TO SING UP PAGE
                                 Get.offAll(signup_page(pno: widget.pno));

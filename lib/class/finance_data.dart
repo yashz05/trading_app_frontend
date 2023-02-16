@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:trading_app_hackathon/auth/index.dart';
+import 'package:trading_app_hackathon/configs/backend_api.dart';
 import 'package:trading_app_hackathon/model/history_model.dart';
 import 'package:trading_app_hackathon/model/ltp_quote.dart';
 import 'package:trading_app_hackathon/configs/angel_endpoints.dart';
-import 'package:trading_app_hackathon/model/history_model.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class finance_data extends GetxController {
   String auth =
@@ -212,5 +214,29 @@ class finance_data extends GetxController {
     }
 
     return [];
+  }
+
+  void get_tokens() async {
+    SharedPreferences sd = await SharedPreferences.getInstance();
+    var id = sd.getString("id");
+    print(id);
+    try {
+      var response = await http.post(
+          Uri.parse(backend_api.base_api + "user/check-login-access"),
+          body: jsonEncode({"uid": id}),headers: {
+        'Accept': 'application/json',
+
+        'Content-Type': 'application/json',
+      });
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print(data);
+      } else {
+        throw (response.body);
+      }
+    } catch (e) {
+      print(e);
+      // Get.offAll(index());
+    }
   }
 }
