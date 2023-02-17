@@ -36,11 +36,11 @@ class watch_lsit extends GetxController {
     var wl = sd.getString("watch_list");
     if (wl == null) {
       ad_to_watch_list(search_model(
-          token: "26000", name: "NIFTY", symbol: "NIFTY", exchSeg: "NSE"));
+          token: "11971", name: "GOLDIAM", symbol: "GOLDIAM", exchSeg: "NSE"));
       ad_to_watch_list(search_model(
-          token: "26009",
-          name: "BANKNIFTY",
-          symbol: "BANKNIFTY",
+          token: "11536",
+          name: "TCS",
+          symbol: "TCS",
           exchSeg: "NSE"));
     } else {
       List<search_model> sml = (json.decode(wl.toString()) as List)

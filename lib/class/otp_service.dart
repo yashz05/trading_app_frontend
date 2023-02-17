@@ -20,6 +20,7 @@ class otp_service extends GetxController {
     var url = Uri.parse(
         'https://verify.twilio.com/v2/Services/${twillo_config.sid}/Verifications');
     var res = await http.post(url, headers: headers, body: data);
+    print(res.body);
     if (res.statusCode != 201)
       throw Exception('http.post error: statusCode= ${res.statusCode}');
     print(res.body);

@@ -5,8 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:trading_app_hackathon/configs/backend_api.dart';
 import 'package:trading_app_hackathon/model/search_model.dart';
+import 'package:trading_app_hackathon/model/orders_model.dart';
 
 class backend_service extends GetxController {
+  RxList<orders_model> orders = <orders_model>[].obs;
+
   void sync_watchlist() async {
     SharedPreferences sd = await SharedPreferences.getInstance();
     var wl = sd.getString("watch_list");
@@ -36,4 +39,25 @@ class backend_service extends GetxController {
   }
 
   void get_watchlist_stock() async {}
+
+  void get_orders() async {
+    SharedPreferences sd = await SharedPreferences.getInstance();
+    var id = sd.getString("id");
+    var headers = {
+      'accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    var data = {"uid": id};
+
+    var url = Uri.parse('http://128.199.17.71:8090/user/orders');
+    var res = await http.post(url, headers: headers, body: jsonEncode(data));
+    if (res.statusCode != 200)
+      throw Exception('http.post error: statusCode= ${res.statusCode}');
+    print(res.body);
+    List<orders_model> ordl = (json.decode(res.body) as List)
+        .map((data) => orders_model.fromJson(data))
+        .toList();
+    orders.value = ordl;
+  }
 }

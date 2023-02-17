@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/finance_data.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:trading_app_hackathon/inner_pages/home_in.dart';
 import 'package:trading_app_hackathon/inner_pages/portfolio.dart';
 import 'package:trading_app_hackathon/inner_pages/search.dart';
-import 'package:trading_app_hackathon/inner_pages/settings.dart';
+import 'package:trading_app_hackathon/inner_pages/orders.dart';
 import 'package:get/get.dart';
+
+
 class home extends StatefulWidget {
   const home({Key? key}) : super(key: key);
 
@@ -22,7 +26,7 @@ class _homeState extends State<home> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-    fd.get_tokens();
+
   }
 
   @override
@@ -34,7 +38,6 @@ class _homeState extends State<home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.black,
@@ -57,8 +60,15 @@ class _homeState extends State<home> with SingleTickerProviderStateMixin {
       ),
       body: IndexedStack(
         index: current_page,
-        children: [home_innerlist(), search(), portfolio_innerlist(), settings()],
+        children: [
+          home_innerlist(),
+          search(),
+          portfolio_innerlist(),
+          orders_page()
+        ],
       ),
     );
   }
+
+
 }

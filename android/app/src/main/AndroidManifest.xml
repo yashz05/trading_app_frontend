@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.trading_app.hackathon.trading_app_hackathon">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="trading_app_hackathon"
         android:name="${applicationName}"

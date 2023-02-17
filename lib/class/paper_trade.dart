@@ -25,7 +25,8 @@ class paper_trade extends GetxController {
     if (res.statusCode != 200)
       throw Exception('http.post error: statusCode= ${res.statusCode}');
     var bal = jsonDecode(res.body);
-    demat_amount.value = bal[0]["balance"];
+    print(bal[0]["balance"].runtimeType);
+    demat_amount.value = double.parse(bal[0]["balance"].toString());
   }
 
   void trade(String type, String token, int qyt, String buy) async {
@@ -56,8 +57,14 @@ class paper_trade extends GetxController {
         var data = jsonDecode(trade.body);
         if (data["error"] == false) {
           Get.back();
-          Get.snackbar("Alert", "Added to Portfolio",
-              backgroundColor: Colors.black, colorText: Colors.white);
+
+          if(type == "buy"){
+            Get.snackbar("Alert", "Added to Portfolio",
+                backgroundColor: Colors.black, colorText: Colors.white);
+          }else{
+            Get.snackbar("Alert", "Removed From Portfolio",
+                backgroundColor: Colors.black, colorText: Colors.white);
+          }
           get_demat();
         } else {
           Get.snackbar("Alert", "Please contact Admin",
@@ -69,7 +76,7 @@ class paper_trade extends GetxController {
     }
   }
 
- Future<List<dynamic>> get_portfolio() async {
+  Future<List<dynamic>> get_portfolio() async {
     SharedPreferences sd = await SharedPreferences.getInstance();
     var id = sd.getString("id");
     var headers = {
@@ -84,7 +91,9 @@ class paper_trade extends GetxController {
     if (res.statusCode != 200)
       throw Exception('http.post error: statusCode= ${res.statusCode}');
     print(res.body);
-    var li =  jsonDecode(res.body);
+
+    var li = jsonDecode(res.body);
     return li;
   }
+
 }

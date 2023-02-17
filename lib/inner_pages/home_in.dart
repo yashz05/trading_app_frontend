@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/finance_data.dart';
@@ -9,6 +10,9 @@ import 'package:trading_app_hackathon/model/stock_info_model.dart';
 import 'package:trading_app_hackathon/stock_pages/stock_info.dart';
 import 'package:trading_app_hackathon/class/watchlist.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:trading_app_hackathon/configs/backend_api.dart';
 
 class home_innerlist extends StatefulWidget {
   const home_innerlist({Key? key}) : super(key: key);
@@ -59,17 +63,18 @@ class _home_innerlistState extends State<home_innerlist>
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-    gwl.get_watch_list().then((value) {
-
-      setState(() {
-        wl_loading = !wl_loading;
+    get_tokens().then((value) {
+      gwl.get_watch_list().then((value) {
+        setState(() {
+          wl_loading = !wl_loading;
+        });
       });
-    });
-    fd.quick_view_chart("NSE", "11971").then((value) {
-      setState(() {
-        cld = value;
+      fd.quick_view_chart("NSE", "11971").then((value) {
+        setState(() {
+          cld = value;
+        });
+        setState(() {});
       });
-      setState(() {});
     });
   }
 
@@ -351,5 +356,34 @@ class _home_innerlistState extends State<home_innerlist>
         ],
       ),
     );
+  }
+
+  Future get_tokens() async {
+    SharedPreferences sd = await SharedPreferences.getInstance();
+    var id = sd.getString("id");
+    print(id);
+    try {
+      var response = await http.post(
+          Uri.parse(backend_api.base_api + "user/check-login-access"),
+          body: jsonEncode({"uid": id}),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          });
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print(data);
+        setState(() {
+          fd.auth.value = data["jwtToken"];
+          fd.refresh_token.value = data["refreshToken"];
+          fd.feedtoken.value = data["feedToken"];
+        });
+      } else {
+        throw (response.body);
+      }
+    } catch (e) {
+      print(e);
+      // Get.offAll(index());
+    }
   }
 }

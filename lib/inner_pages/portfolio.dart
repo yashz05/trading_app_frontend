@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:trading_app_hackathon/class/auth_services.dart';
 import 'package:trading_app_hackathon/class/paper_trade.dart';
@@ -19,25 +22,32 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
   user_model um = user_model();
   paper_trade pd = Get.put(paper_trade());
   List<dynamic> pl = [];
-  var total;
+  double total = 0;
+  late Timer t;
+  int l = 0;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-    pd.get_demat();
-    pd.get_portfolio().then((value) {
-      setState(() {
-        pl = value;
-      });
-      pl.forEach((element) {
-        print("test");
-        print( total);
-       setState(() {
-         total += element["qty"] * element["buy_rate"];
-       });
+    t = Timer.periodic(Duration(seconds: 2), (timer) {
+      pd.get_demat();
+      pd.get_portfolio().then((value) {
+        setState(() {
+          pl = value;
+        });
+        pl.forEach((element) {
+          if (l < 1) {
+            setState(() {
+              l++;
+              total += int.parse(element["qty"].toString()) *
+                  double.parse(element["buy_rate"].toString());
+            });
+          }
+        });
       });
     });
+
     aus.getuser_data().then((value) {
       setState(() {
         um = value;
@@ -49,6 +59,7 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
   void dispose() {
     _controller.dispose();
     super.dispose();
+    t.cancel();
   }
 
   @override
@@ -62,10 +73,13 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(""),
-            // Text(
-            //   total.toString(),
-            //   style: TextStyle(color: app_theme.primary_color),
-            // )
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Text(
+                "₹" + total.toString(),
+                style: TextStyle(color: app_theme.primary_color, fontSize: 40),
+              ),
+            )
           ],
         ),
       ),
@@ -150,11 +164,11 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
                       SizedBox(
                         height: 10,
                       ),
-                      Text(
-                        "₹" + pd.demat_amount.floorToDouble().toString(),
-                        style: TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.w900),
-                      ),
+                      Obx(() => Text(
+                            "₹" + pd.demat_amount.floorToDouble().toString(),
+                            style: TextStyle(
+                                fontSize: 40, fontWeight: FontWeight.w900),
+                          )),
                     ],
                   ),
                 ),
@@ -211,7 +225,6 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
                     ),
                   ],
                 ),
-
                 Container(
                     color: Colors.black,
                     child: pl != null
@@ -221,6 +234,14 @@ class _portfolio_innerlistState extends State<portfolio_innerlist>
                             physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (BuildContext ctx, int i) {
                               return ListTile(
+                                onTap: () {
+                                  print("SELL");
+                                  pd.trade(
+                                      "Sell",
+                                      pl[i]["token"]!,
+                                      int.parse(pl[i]["qty"].toString()),
+                                      pl[i]["buy_rate"].toString());
+                                },
                                 title: Text(
                                   pl[i]["name"].toString(),
                                   style: app_theme.ts_price,

@@ -11,11 +11,9 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class finance_data extends GetxController {
-  String auth =
-      "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VybmFtZSI6IlNUUk4xMDYyIiwicm9sZXMiOjAsInVzZXJ0eXBlIjoiVVNFUiIsImlhdCI6MTY3NjUyNDgzOSwiZXhwIjoxNzYyOTI0ODM5fQ.Snk3bV4p-efTkc_6na02BaKj3n8RFYhm_gK5vsNRUOzliMr11Xssvu5vUVuhzC_rFixcY9sndidC3LQtwSFWaQ";
-  String refresh_token =
-      "eyJhbGciOiJIUzUxMiJ9.eyJ0b2tlbiI6IlJFRlJFU0gtVE9LRU4iLCJpYXQiOjE2NzY1MjQ4Mzl9.rbLQpa-2YsAuYU60psMV00KC8PlOtAqwoHs8AmZb5CqrPFfNA8yn-t34m0nflERvgPGVn3PQ-oC3rE6PvvX0QA";
-  String feedtoken = "0806354284";
+  RxString auth = "".obs;
+  RxString refresh_token = "".obs;
+  RxString feedtoken = "".obs;
 
   Future<String> get_ltp(String Symbol, String token, String exg) async {
     var headers = {
@@ -62,6 +60,7 @@ class finance_data extends GetxController {
       'https://apiconnect.angelbroking.com/order-service/rest/secure/angelbroking/order/v1/getLtpData',
     );
     var r = await http.post(url, body: jsonEncode(data), headers: headers);
+    print(r.body);
     if (r.statusCode == 200) {
       ltp_quote ltp = ltp_quote.fromJson(jsonDecode(r.body));
       return ltp;
@@ -142,6 +141,57 @@ class finance_data extends GetxController {
     var history_data = await http.post(Uri.parse(angel_endpoints.history_api),
         body: jsonEncode(body), headers: headers);
     print("called");
+    print(headers);
+    if (history_data.statusCode == 200) {
+      HistoryModel m = historyModelFromJson(history_data.body);
+
+      List cld = [];
+      m.data.forEach((element) {
+        var daydata = {
+          "day": DateFormat("yyyy-MM-dd")
+              .parse(element[0])
+              .millisecondsSinceEpoch
+              .toDouble(),
+          "value": element[4]
+        };
+        cld.add(daydata);
+      });
+
+      return cld;
+    }
+
+    return [];
+  }
+
+  Future<List> ltp_backup(String excg, String token) async {
+    //Get 10 days chart Data only
+
+    var to = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    var body = {
+      "exchange": "${excg}",
+      "symboltoken": "${token}",
+      "interval": "ONE_DAY",
+      "fromdate": "${to} 09:15",
+      "todate": "${to} 03:30"
+    };
+
+    var headers = {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${auth}',
+      'Content-Type': 'application/json',
+      'X-ClientLocalIP': '192.168.168.168',
+      'X-ClientPublicIP': '192.168.168.168',
+      'X-MACAddress': 'fe89::216e:6507:4b90:3719',
+      'X-PrivateKey': 'zVMzZ7so',
+      'X-SourceID': 'WEB',
+      'X-UserType': 'USER',
+    };
+
+    var history_data = await http.post(Uri.parse(angel_endpoints.history_api),
+        body: jsonEncode(body), headers: headers);
+    print("called");
+    print(headers);
     if (history_data.statusCode == 200) {
       HistoryModel m = historyModelFromJson(history_data.body);
 
@@ -192,7 +242,7 @@ class finance_data extends GetxController {
 
     var history_data = await http.post(Uri.parse(angel_endpoints.history_api),
         body: jsonEncode(body), headers: headers);
-
+    print(headers);
     if (history_data.statusCode == 200) {
       HistoryModel m = historyModelFromJson(history_data.body);
       print(history_data.body);
@@ -216,21 +266,24 @@ class finance_data extends GetxController {
     return [];
   }
 
-  void get_tokens() async {
+  Future get_tokens() async {
     SharedPreferences sd = await SharedPreferences.getInstance();
     var id = sd.getString("id");
     print(id);
     try {
       var response = await http.post(
           Uri.parse(backend_api.base_api + "user/check-login-access"),
-          body: jsonEncode({"uid": id}),headers: {
-        'Accept': 'application/json',
-
-        'Content-Type': 'application/json',
-      });
+          body: jsonEncode({"uid": id}),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          });
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         print(data);
+        auth.value = data["jwtToken"];
+        refresh_token.value = data["refreshToken"];
+        feedtoken.value = data["feedToken"];
       } else {
         throw (response.body);
       }

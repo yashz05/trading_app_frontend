@@ -84,6 +84,7 @@ class _stock_infoState extends State<stock_info>
         .ohlc(widget.data.tradingsymbol!, widget.data.symboltoken!,
             widget.data.exchange!)
         .then((value) {
+
       setState(() {
         ltp = stock_info_model(
           name: widget.data.name,

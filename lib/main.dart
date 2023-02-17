@@ -3,6 +3,7 @@ import 'package:trading_app_hackathon/auth/index.dart';
 import 'package:trading_app_hackathon/auth/otp_page.dart';
 import 'package:trading_app_hackathon/configs/theme.dart';
 import 'package:get/get.dart';
+import 'package:trading_app_hackathon/splash_screen.dart';
 
 
 void main() async {
@@ -26,6 +27,6 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           primarySwatch: app_theme.primary_color,
         ),
-        home: index());
+        home: splash_screen());
   }
 }
