@@ -1,6 +1,5 @@
-# Trading App Hackathon
+# Trading App 
 
-Trading app for Hackathon for UNSTOP / IIT HY
 
 This Project is based on Flutter 
 ## Getting Started
